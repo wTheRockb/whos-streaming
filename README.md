@@ -6,4 +6,4 @@ A simple tool to view what streamers you follow on twitch.tv are currently live.
 Install the requirements:
 `pip install requirements.txt`
 
-`python3 check.py [TWITCH USERNAME]`
+`python3 whos_streaming.py [TWITCH USERNAME]`

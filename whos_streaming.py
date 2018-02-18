@@ -3,12 +3,26 @@ import requests
 from collections import namedtuple
 
 
-TWITCH_CLIENT_ID = "xrl2910nixis8ogn2q23ev7gjwb4kj"
-HEADERS = {"Client-ID": "xrl2910nixis8ogn2q23ev7gjwb4kj"}
+def load_secret_clientId():
+    with open('secret.txt', 'r') as fp:
+        secret = fp.readline().split('\n')[0]
+        client_id = fp.readline()
+        return (secret, client_id)
 
 Stream = namedtuple('Stream', [
                     'name', 'game_id', 'game_title', 'user_id', 'title', 'thumbnail_url', 'type', 'viewer_count'])
 
+def retrieve_token():
+    secret_clientId = load_secret_clientId()
+    payload = {
+    "client_id":  secret_clientId[1],
+    "client_secret": secret_clientId[0],
+    "grant_type": "client_credentials",
+    }
+    r = requests.post("https://api.twitch.tv/kraken/oauth2/token", params=payload)
+    return r.json()["access_token"]
+
+HEADERS = {"Authorization": "Bearer " + retrieve_token()}
 
 def group_by_100s(input):
     return [input[i:i+100] for i in range(0, len(input), 100)]
@@ -34,8 +48,6 @@ def get_user(username):
                      params=payload, headers=HEADERS)
     return r.json()
 
-
-
 def get_follows(user_id):
     still_paginated = True
     payload = {"from_id": user_id, "first": 100}
@@ -53,7 +65,6 @@ def get_follows(user_id):
             payload["after"] = data["pagination"]["cursor"]
         else:
             still_paginated = False
-
 
 def request_streams_info(ids):
     payload = {"first": 100}
@@ -77,7 +88,6 @@ def request_streams_info(ids):
                        "thumbnail_url"], i["type"], i["viewer_count"])
             yield s
 
-
 def convert_logins_to_ids(streams):
     ids_displays = {}
     streams = list(streams)
@@ -94,7 +104,6 @@ def convert_logins_to_ids(streams):
         s2 = s._replace(name=ids_displays[s.user_id])
         yield s2
 
-
 def convert_gameids_to_names(streams):
     ids_names = {}
     streams = list(streams)
@@ -110,12 +119,10 @@ def convert_gameids_to_names(streams):
         s2 = s._replace(game_title=ids_names[s.game_id])
         yield s2
 
-
 def print_streams(streams):
     for s in streams:
         line = "{0:22} | {1:30}  | {2:8} | {3:125}".format(s.name, s.game_title, s.viewer_count, s.title)
         print(line)
-
 
 def main():
     username = parse_username()
@@ -128,7 +135,6 @@ def main():
     stream_list = list(streams_with_games)
     stream_list.sort(key=lambda x: x.viewer_count, reverse=True)
     print_streams(stream_list)
-
 
 if __name__ == "__main__":
     main()
