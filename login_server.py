@@ -3,7 +3,7 @@ from flask import Flask, request, redirect, session, url_for
 from flask.json import jsonify
 import os
 from config import load_secret_clientId
-from twitch_access import retrieve_token, save_access_payload
+from twitch_access import retrieve_token, save_access_payload, REDIRECT_URI
 import json
 
 app = Flask(__name__)
@@ -15,7 +15,6 @@ secret_clientId = load_secret_clientId() ## Not ideal to do this on module load 
 client_id = secret_clientId[1]
 client_secret = secret_clientId[0]
 authorization_base_url = 'https://id.twitch.tv/oauth2/authorize?response_type=code&force_verify=true'
-redirect_uri='http://localhost:5000/callback'
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 
@@ -26,7 +25,7 @@ def demo():
     Redirect the user/resource owner to the OAuth provider (i.e. Github)
     using an URL with a few key OAuth parameters.
     """
-    twitch = OAuth2Session(client_id, redirect_uri=redirect_uri)
+    twitch = OAuth2Session(client_id, redirect_uri=REDIRECT_URI)
     authorization_url, state = twitch.authorization_url(authorization_base_url)
 
     # State is used to prevent CSRF, keep this for later.
