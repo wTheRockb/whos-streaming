@@ -15,3 +15,8 @@ As of March 2020 Twitch has overhauled security on their endpoints. This tool ha
 4. Finally, to use the tool run `python whos_streaming.py <username>` to get a list of live streams, titles, game and viewer count.
 
 With any bugs feel free to open issues, pull requests or directly email me at forrestwbutler@gmail.com.
+
+## Screenshots
+
+![images/out.png]
+![images/auth.png]
