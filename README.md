@@ -18,5 +18,5 @@ With any bugs feel free to open issues, pull requests or directly email me at fo
 
 ## Screenshots
 
-![images/out.png]
-![images/auth.png]
+![whos-streaming output](images/out.png)
+![whos-streaming auth](images/auth.png)
