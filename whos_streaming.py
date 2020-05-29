@@ -1,28 +1,22 @@
 import sys
 import requests
 from collections import namedtuple
+from twitch_access import retrieve_token, load_access_payload
+import json
+from config import load_secret_clientId
 
-
-def load_secret_clientId():
-    with open('secret.txt', 'r') as fp:
-        secret = fp.readline().split('\n')[0]
-        client_id = fp.readline()
-        return (secret, client_id)
 
 Stream = namedtuple('Stream', [
                     'name', 'game_id', 'game_title', 'user_id', 'title', 'thumbnail_url', 'type', 'viewer_count'])
 
-def retrieve_token():
-    secret_clientId = load_secret_clientId()
-    payload = {
-    "client_id":  secret_clientId[1],
-    "client_secret": secret_clientId[0],
-    "grant_type": "client_credentials",
-    }
-    r = requests.post("https://api.twitch.tv/kraken/oauth2/token", params=payload)
-    return r.json()["access_token"]
 
-HEADERS = {"Authorization": "Bearer " + retrieve_token()}
+secret_clientId = load_secret_clientId()
+
+HEADERS = {
+"Authorization": "Bearer " + load_access_payload()["access_token"],
+"Client-ID": secret_clientId[1]
+}
+
 
 def group_by_100s(input):
     return [input[i:i+100] for i in range(0, len(input), 100)]
